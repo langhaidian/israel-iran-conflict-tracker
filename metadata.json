@@ -1,0 +1,5 @@
+{
+  "name": "Israel-Iran Conflict Tracker",
+  "description": "Real-time news tracker for the Israel-Iran conflict, fetching latest updates from authoritative sources.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,66 @@
+import { GoogleGenAI } from '@google/genai';
+
+export const config = {
+    maxDuration: 120, // Gemini 模型响应可能较慢，设置 2 分钟超时
+};
+
+export default async function handler(req: any, res: any) {
+    // 仅允许 GET 请求
+    if (req.method !== 'GET') {
+        return res.status(405).json({ error: '仅支持 GET 请求' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    const modelName = process.env.GEMINI_MODEL || 'gemini-3.1-pro-preview';
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'GEMINI_API_KEY 未在 Vercel 环境变量中配置。' });
+    }
+
+    try {
+        const ai = new GoogleGenAI({ apiKey });
+
+        const response = await ai.models.generateContent({
+            model: modelName,
+            contents: `搜索以色列与伊朗冲突的最新动态。根据搜索结果，请用简体中文提供以下内容：
+1. 当前局势的简要摘要（3-5段），用你自己的语言撰写。
+2. 8-12条最新相关新闻的列表，包含标题、简要描述（用你自己的语言撰写）、媒体名称、大致发布时间和来源链接。
+
+重要：所有摘要和描述必须用简体中文撰写，用你自己的语言表述，不要逐字复制任何来源的原文。新闻标题也请翻译为中文。
+
+返回一个 JSON 对象，严格使用以下结构（不要使用 markdown 代码块包裹）：
+{"summary": "中文摘要内容", "lastUpdated": "${new Date().toISOString()}", "articles": [{"title": "中文标题", "snippet": "中文简要描述", "publisher": "媒体名称", "publishedAt": "发布时间", "url": "来源链接"}]}`,
+            config: {
+                tools: [{ googleSearch: {} }],
+            },
+        });
+
+        let text = response.text;
+        if (!text) {
+            const finishReason = response.candidates?.[0]?.finishReason;
+            return res.status(500).json({
+                error: `AI 未返回数据。终止原因：${finishReason || '未知'}`,
+            });
+        }
+
+        // 提取 JSON
+        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+            text = jsonMatch[1];
+        } else {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1) {
+                text = text.slice(start, end + 1);
+            }
+        }
+
+        const data = JSON.parse(text);
+        return res.status(200).json(data);
+    } catch (err: any) {
+        console.error('API Error:', err);
+        return res.status(500).json({
+            error: err.message || '获取新闻失败。',
+        });
+    }
+}
