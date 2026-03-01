@@ -4,9 +4,22 @@ export const config = {
     maxDuration: 60,
 };
 
+// 服务端内存缓存（10 分钟 TTL）
+let cachedData: any = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 10 * 60 * 1000; // 10 分钟
+
 export default async function handler(req: any, res: any) {
     if (req.method !== 'GET') {
         return res.status(405).json({ error: '仅支持 GET 请求' });
+    }
+
+    // 检查是否强制刷新
+    const forceRefresh = req.query?.force === 'true';
+
+    // 如果缓存有效且非强制刷新，直接返回缓存
+    if (!forceRefresh && cachedData && Date.now() - cacheTimestamp < CACHE_TTL) {
+        return res.status(200).json(cachedData);
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -55,6 +68,11 @@ export default async function handler(req: any, res: any) {
         }
 
         const data = JSON.parse(text);
+
+        // 更新缓存
+        cachedData = data;
+        cacheTimestamp = Date.now();
+
         return res.status(200).json(data);
     } catch (err: any) {
         console.error('API Error:', err);

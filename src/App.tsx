@@ -42,16 +42,57 @@ function LoadingView() {
   );
 }
 
+const STORAGE_KEY = 'conflict-tracker-data';
+const MAX_ARTICLES = 100;
+
+function loadCachedData(): NewsData | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return null;
+}
+
+function saveCachedData(data: NewsData) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch { }
+}
+
+function mergeArticles(existing: Article[], incoming: Article[]): Article[] {
+  const seen = new Map<string, Article>();
+  // 先加入已有文章
+  for (const a of existing) {
+    const key = a.url || a.title;
+    if (key) seen.set(key, a);
+  }
+  // 新文章覆盖同 URL 的旧文章
+  for (const a of incoming) {
+    const key = a.url || a.title;
+    if (key) seen.set(key, a);
+  }
+  // 按时间降序排列
+  const merged = Array.from(seen.values()).sort((a, b) => {
+    const da = a.publishedAt || '';
+    const db = b.publishedAt || '';
+    return db.localeCompare(da);
+  });
+  // 最多保留 MAX_ARTICLES 条
+  return merged.slice(0, MAX_ARTICLES);
+}
+
 export default function App() {
-  const [data, setData] = useState<NewsData | null>(null);
+  const cached = loadCachedData();
+  const [data, setData] = useState<NewsData | null>(cached);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNews = async () => {
+  const fetchNews = async (force = false) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/news');
+      const url = force ? '/api/news?force=true' : '/api/news';
+      const response = await fetch(url);
       let result;
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
@@ -60,14 +101,24 @@ export default function App() {
         const text = await response.text();
         throw new Error(
           response.status === 504
-            ? '请求超时。AI 模型响应较慢，请稍后重试或在 Vercel 环境变量中将 GEMINI_MODEL 设为更快的模型（如 gemini-2.0-flash）。'
+            ? '请求超时。AI 模型响应较慢，请稍后重试。'
             : `服务端错误 (${response.status}): ${text.slice(0, 100)}`
         );
       }
       if (!response.ok) {
         throw new Error(result.error || `服务端错误 (${response.status})`);
       }
-      setData(result);
+      // 合并新旧文章
+      setData(prev => {
+        const existingArticles = prev?.articles || [];
+        const merged: NewsData = {
+          summary: result.summary,
+          lastUpdated: result.lastUpdated,
+          articles: mergeArticles(existingArticles, result.articles || []),
+        };
+        saveCachedData(merged);
+        return merged;
+      });
     } catch (err: any) {
       console.error(err);
       setError(err.message || '获取新闻失败。');
@@ -102,7 +153,7 @@ export default function App() {
               </div>
             )}
             <button
-              onClick={fetchNews}
+              onClick={() => fetchNews(true)}
               disabled={loading}
               className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-md transition-colors disabled:opacity-50"
             >
