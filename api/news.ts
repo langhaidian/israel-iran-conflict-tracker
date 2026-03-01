@@ -10,7 +10,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    const modelName = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 
     if (!apiKey) {
         return res.status(500).json({ error: 'GEMINI_API_KEY 未在 Vercel 环境变量中配置。' });
