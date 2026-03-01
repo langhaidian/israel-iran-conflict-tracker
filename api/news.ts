@@ -1,17 +1,16 @@
 import { GoogleGenAI } from '@google/genai';
 
 export const config = {
-    maxDuration: 120, // Gemini 模型响应可能较慢，设置 2 分钟超时
+    maxDuration: 60,
 };
 
 export default async function handler(req: any, res: any) {
-    // 仅允许 GET 请求
     if (req.method !== 'GET') {
         return res.status(405).json({ error: '仅支持 GET 请求' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const modelName = process.env.GEMINI_MODEL || 'gemini-3.1-pro-preview';
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
     if (!apiKey) {
         return res.status(500).json({ error: 'GEMINI_API_KEY 未在 Vercel 环境变量中配置。' });

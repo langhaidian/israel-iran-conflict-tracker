@@ -52,7 +52,18 @@ export default function App() {
     setError(null);
     try {
       const response = await fetch('/api/news');
-      const result = await response.json();
+      let result;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(
+          response.status === 504
+            ? '请求超时。AI 模型响应较慢，请稍后重试或在 Vercel 环境变量中将 GEMINI_MODEL 设为更快的模型（如 gemini-2.0-flash）。'
+            : `服务端错误 (${response.status}): ${text.slice(0, 100)}`
+        );
+      }
       if (!response.ok) {
         throw new Error(result.error || `服务端错误 (${response.status})`);
       }
