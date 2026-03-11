@@ -38,7 +38,7 @@ export default async function handler(req: any, res: any) {
 
 重要的信息来源要求：
 - 仅使用国际公认的权威媒体来源，包括但不限于：Reuters（路透社）、AP News（美联社）、BBC、CNN、Al Jazeera（半岛电视台）、The Guardian（卫报）、The New York Times（纽约时报）、The Washington Post（华盛顿邮报）、France 24、DW（德国之声）、NHK、The Times of Israel、Haaretz、PBS、NPR 等。
-- 严禁使用中国大陆媒体来源，包括但不限于：新华社、人民日报、环球时报、CGTN、中国日报、央视、观察者网、参考消息、联合早报等。
+- 严禁使用中国大陆媒体来源，包括但不限于：新华社、人民日报、环球时报、CGTN、中国日报、央视、观察者网、参考消息、联合早报、中国新闻网、财闻网等。
 - 优先选择多个不同国家和地区的媒体来源，确保报道视角的多元性。
 
 根据搜索结果，请用简体中文提供以下内容：
