@@ -59,37 +59,40 @@ function saveCachedData(data: NewsData) {
   } catch { }
 }
 
+/** 解析中文日期字符串如 "2026年3月1日" 或标准格式，返回时间戳用于排序 */
+function parseDateString(s: string): number {
+  // 尝试匹配中文日期: "2026年3月1日" 或 "2026年3月11日"
+  const zhMatch = s.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (zhMatch) {
+    return new Date(
+      parseInt(zhMatch[1]),
+      parseInt(zhMatch[2]) - 1, // 月份从0开始
+      parseInt(zhMatch[3])
+    ).getTime();
+  }
+  // 回退到标准 Date 解析
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) return d.getTime();
+  // 无法解析则返回 0（会被排到最后）
+  return 0;
+}
+
 function mergeArticles(existing: Article[], incoming: Article[]): Article[] {
   const seen = new Map<string, Article>();
-  // 先加入已有文章
   for (const a of existing) {
     const key = a.url || a.title;
     if (key) seen.set(key, a);
   }
-  // 新文章覆盖同 URL 的旧文章
   for (const a of incoming) {
     const key = a.url || a.title;
     if (key) seen.set(key, a);
   }
-  // 按时间降序排列
+  // 按时间降序排列（最新的在最前面）
   const merged = Array.from(seen.values()).sort((a, b) => {
-    // 处理可能为空的时间字符串
-    if (!a.publishedAt && !b.publishedAt) return 0;
-    if (!a.publishedAt) return 1; // b放前面
-    if (!b.publishedAt) return -1; // a放前面
-
-    // 尝试解析为 Date 对象进行准确的降序对比
-    const dateA = new Date(a.publishedAt);
-    const dateB = new Date(b.publishedAt);
-    
-    // 如果解析出的 Date 不是有效数字(比如一些奇怪的相对时间)，则回退到字符串对比
-    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-      return b.publishedAt.localeCompare(a.publishedAt);
-    }
-    
-    return dateB.getTime() - dateA.getTime();
+    const tsA = a.publishedAt ? parseDateString(a.publishedAt) : 0;
+    const tsB = b.publishedAt ? parseDateString(b.publishedAt) : 0;
+    return tsB - tsA;
   });
-  // 最多保留 MAX_ARTICLES 条
   return merged.slice(0, MAX_ARTICLES);
 }
 
