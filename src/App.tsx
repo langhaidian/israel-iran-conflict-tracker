@@ -73,9 +73,21 @@ function mergeArticles(existing: Article[], incoming: Article[]): Article[] {
   }
   // 按时间降序排列
   const merged = Array.from(seen.values()).sort((a, b) => {
-    const da = a.publishedAt || '';
-    const db = b.publishedAt || '';
-    return db.localeCompare(da);
+    // 处理可能为空的时间字符串
+    if (!a.publishedAt && !b.publishedAt) return 0;
+    if (!a.publishedAt) return 1; // b放前面
+    if (!b.publishedAt) return -1; // a放前面
+
+    // 尝试解析为 Date 对象进行准确的降序对比
+    const dateA = new Date(a.publishedAt);
+    const dateB = new Date(b.publishedAt);
+    
+    // 如果解析出的 Date 不是有效数字(比如一些奇怪的相对时间)，则回退到字符串对比
+    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+      return b.publishedAt.localeCompare(a.publishedAt);
+    }
+    
+    return dateB.getTime() - dateA.getTime();
   });
   // 最多保留 MAX_ARTICLES 条
   return merged.slice(0, MAX_ARTICLES);
