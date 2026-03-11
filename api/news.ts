@@ -34,14 +34,21 @@ export default async function handler(req: any, res: any) {
 
         const response = await ai.models.generateContent({
             model: modelName,
-            contents: `搜索以色列与伊朗冲突的最新动态。根据搜索结果，请用简体中文提供以下内容：
+            contents: `搜索以色列与伊朗冲突的最新动态。
+
+重要的信息来源要求：
+- 仅使用国际公认的权威媒体来源，包括但不限于：Reuters（路透社）、AP News（美联社）、BBC、CNN、Al Jazeera（半岛电视台）、The Guardian（卫报）、The New York Times（纽约时报）、The Washington Post（华盛顿邮报）、France 24、DW（德国之声）、NHK、The Times of Israel、Haaretz、PBS、NPR 等。
+- 严禁使用中国大陆媒体来源，包括但不限于：新华社、人民日报、环球时报、CGTN、中国日报、央视、观察者网、参考消息、联合早报等。
+- 优先选择多个不同国家和地区的媒体来源，确保报道视角的多元性。
+
+根据搜索结果，请用简体中文提供以下内容：
 1. 当前局势的简要摘要（3-5段），用你自己的语言撰写。
-2. 8-12条最新相关新闻的列表，包含标题、简要描述（用你自己的语言撰写）、媒体名称、大致发布时间和来源链接。
+2. 8-12条最新相关新闻的列表，包含标题、简要描述（用你自己的语言撰写）、媒体名称（使用英文原名）、大致发布时间和来源链接。
 
 重要：所有摘要和描述必须用简体中文撰写，用你自己的语言表述，不要逐字复制任何来源的原文。新闻标题也请翻译为中文。
 
 返回一个 JSON 对象，严格使用以下结构（不要使用 markdown 代码块包裹）：
-{"summary": "中文摘要内容", "lastUpdated": "${new Date().toISOString()}", "articles": [{"title": "中文标题", "snippet": "中文简要描述", "publisher": "媒体名称", "publishedAt": "发布时间", "url": "来源链接"}]}`,
+{"summary": "中文摘要内容", "lastUpdated": "${new Date().toISOString()}", "articles": [{"title": "中文标题", "snippet": "中文简要描述", "publisher": "英文媒体名称", "publishedAt": "发布时间", "url": "来源链接"}]}`,
             config: {
                 tools: [{ googleSearch: {} }],
             },

@@ -203,15 +203,15 @@ export default function App() {
                 transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.8 }}
                 className="pt-2 pb-8"
               >
-                <div className="flex items-center gap-3 mb-6 font-mono text-sm tracking-widest text-[#F0EFEA]/60 pb-4 border-b border-[#F0EFEA]/20">
+                <div className="flex items-center gap-3 mb-4 font-mono text-xs tracking-widest text-[#F0EFEA]/60 pb-3 border-b border-[#F0EFEA]/20">
                     <span>// SITREP</span>
                     <span className="flex-1"></span>
                     <span>DOC-ID: {Math.random().toString(36).substr(2, 6).toUpperCase()}</span>
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-none tracking-tighter">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-none tracking-tighter">
                   以色列-伊朗冲突升级
                 </h2>
-                <div className="text-[#F0EFEA]/80 leading-relaxed text-lg font-serif markdown-body prose-invert prose-headings:font-sans prose-headings:tracking-tighter prose-headings:mb-4">
+                <div className="text-[#F0EFEA]/80 leading-relaxed text-base font-serif markdown-body prose-invert prose-headings:font-sans prose-headings:tracking-tighter prose-headings:mb-3">
                   <Markdown>{data.summary}</Markdown>
                 </div>
                 <div className="mt-12 pt-6 border-t border-[#F0EFEA]/20 flex items-center gap-2 text-xs text-[#F0EFEA]/50 font-mono tracking-widest uppercase">
@@ -223,7 +223,7 @@ export default function App() {
             {/* Right Column: News Feed */}
             <div className="lg:col-span-7">
               <div className="flex items-end justify-between mb-8 pb-4 border-b-2 border-[#F0EFEA]">
-                <h2 className="text-lg font-bold tracking-widest uppercase">RAW_INTEL_FEED</h2>
+                <h2 className="text-base font-bold tracking-widest uppercase">RAW_INTEL_FEED</h2>
                 <span className="text-xs font-mono text-[#F0EFEA]/40">[{data.articles.length} EVENTS]</span>
               </div>
 
@@ -237,10 +237,10 @@ export default function App() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, ease: [0.16, 1, 0.3, 1] }}
-                    className="group block py-8 transition-colors hover:bg-[#F0EFEA]/5 px-4 -mx-4"
+                    className="group block py-6 transition-colors hover:bg-[#F0EFEA]/5 px-4 -mx-4"
                   >
-                    <div className="flex flex-col md:flex-row gap-6">
-                        <div className="md:w-32 shrink-0 flex flex-row md:flex-col gap-3 font-mono tracking-tighter text-[#F0EFEA]/60">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="md:w-28 shrink-0 flex flex-row md:flex-col gap-2 font-mono tracking-tighter text-[#F0EFEA]/60">
                           <span className="text-xs font-bold uppercase truncate">
                             {article.publisher}
                           </span>
@@ -251,10 +251,10 @@ export default function App() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl md:text-2xl font-bold text-[#F0EFEA] group-hover:text-[#E63946] transition-colors leading-snug mb-3 tracking-tight">
+                          <h3 className="text-lg md:text-xl font-bold text-[#F0EFEA] group-hover:text-[#E63946] transition-colors leading-snug mb-2 tracking-tight">
                             {article.title}
                           </h3>
-                          <p className="text-base text-[#F0EFEA]/70 line-clamp-3 leading-relaxed font-serif">
+                          <p className="text-sm text-[#F0EFEA]/70 line-clamp-3 leading-relaxed font-serif">
                             {article.snippet}
                           </p>
                         </div>
