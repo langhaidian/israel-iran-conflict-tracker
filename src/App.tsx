@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw, AlertCircle, Clock, ExternalLink, ShieldAlert, Globe, ChevronRight } from 'lucide-react';
+import { RefreshCw, AlertCircle, Clock, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 
 import Markdown from 'react-markdown';
@@ -132,49 +132,46 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-red-500/30">
+    <div className="min-h-screen bg-[#050505] text-[#F0EFEA] font-sans selection:bg-[#E63946]/50">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 bg-[#050505] border-b-2 border-[#F0EFEA]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20">
-              <ShieldAlert className="w-4 h-4 text-red-500" />
-            </div>
-            <h1 className="font-semibold tracking-tight text-lg">冲突追踪</h1>
+            <h1 className="font-semibold tracking-tight text-lg">以色列-伊朗冲突追踪</h1>
           </div>
           <div className="flex items-center gap-4">
             {data?.lastUpdated && (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-400 font-mono">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-[#E63946] font-mono tracking-widest font-bold">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-[#E63946] opacity-75"></span>
+                  <span className="relative inline-flex rounded-none h-2 w-2 bg-[#E63946]"></span>
                 </span>
-                实时更新
+                LIVE
               </div>
             )}
             <button
               onClick={() => fetchNews(true)}
               disabled={loading}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-md transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-bold font-mono tracking-widest uppercase bg-[#050505] hover:bg-[#F0EFEA] hover:text-[#050505] border border-[#F0EFEA] transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">{loading ? '更新中...' : '刷新'}</span>
+              <span className="hidden sm:inline">{loading ? 'SYNCING' : 'FORCE REFRESH'}</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {error && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3 text-red-400"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-12 p-6 bg-[#E63946] text-[#050505] flex items-start gap-4"
           >
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <AlertCircle className="w-6 h-6 shrink-0 mt-1" />
             <div>
-              <h3 className="font-medium text-red-300">加载更新失败</h3>
-              <p className="text-sm mt-1 opacity-80">{error}</p>
+              <h3 className="font-bold text-xl uppercase tracking-widest font-mono">CRITICAL ERROR</h3>
+              <p className="text-sm mt-2 font-mono">{error}</p>
             </div>
           </motion.div>
         )}
@@ -182,73 +179,70 @@ export default function App() {
         {loading && !data ? (
           <LoadingView />
         ) : data ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             {/* Left Column: Summary */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-5 space-y-8">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6"
+                transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.8 }}
+                className="pt-2 pb-8"
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <Globe className="w-5 h-5 text-zinc-400" />
-                  <h2 className="text-sm font-mono tracking-widest uppercase text-zinc-400">局势概览</h2>
+                <div className="flex items-center gap-3 mb-6 font-mono text-sm tracking-widest text-[#F0EFEA]/60 pb-4 border-b border-[#F0EFEA]/20">
+                    <span>// SITREP</span>
+                    <span className="flex-1"></span>
+                    <span>DOC-ID: {Math.random().toString(36).substr(2, 6).toUpperCase()}</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 leading-tight">以色列-伊朗冲突升级</h3>
-                <div className="text-zinc-300 leading-relaxed text-sm markdown-body">
+                <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-none tracking-tighter">
+                  以色列-伊朗冲突升级
+                </h2>
+                <div className="text-[#F0EFEA]/80 leading-relaxed text-lg font-serif markdown-body prose-invert prose-headings:font-sans prose-headings:tracking-tighter prose-headings:mb-4">
                   <Markdown>{data.summary}</Markdown>
                 </div>
-                <div className="mt-6 pt-6 border-t border-zinc-800 flex items-center gap-2 text-xs text-zinc-500 font-mono">
-                  <Clock className="w-3.5 h-3.5" />
-                  更新于：{data.lastUpdated || new Date().toLocaleString()}
+                <div className="mt-12 pt-6 border-t border-[#F0EFEA]/20 flex items-center gap-2 text-xs text-[#F0EFEA]/50 font-mono tracking-widest uppercase">
+                  LOG_TS: {data.lastUpdated || new Date().toLocaleString()}
                 </div>
               </motion.div>
             </div>
 
             {/* Right Column: News Feed */}
-            <div className="lg:col-span-8">
-              <div className="flex items-center gap-2 mb-6">
-                <h2 className="text-sm font-mono tracking-widest uppercase text-zinc-400">最新报道</h2>
-                <div className="h-px bg-zinc-800 flex-1 ml-4"></div>
+            <div className="lg:col-span-7">
+              <div className="flex items-end justify-between mb-8 pb-4 border-b-2 border-[#F0EFEA]">
+                <h2 className="text-lg font-bold tracking-widest uppercase">RAW_INTEL_FEED</h2>
+                <span className="text-xs font-mono text-[#F0EFEA]/40">[{data.articles.length} EVENTS]</span>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-0 divide-y divide-[#F0EFEA]/10">
                 {data.articles.map((article, index) => (
                   <motion.a
                     href={article.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group block bg-zinc-900/30 hover:bg-zinc-900 border border-zinc-800/50 hover:border-zinc-700 rounded-xl p-5 transition-all"
+                    transition={{ delay: index * 0.03, ease: [0.16, 1, 0.3, 1] }}
+                    className="group block py-8 transition-colors hover:bg-[#F0EFEA]/5 px-4 -mx-4"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-xs font-semibold text-zinc-300 bg-zinc-800 px-2 py-1 rounded">
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="md:w-32 shrink-0 flex flex-row md:flex-col gap-3 font-mono tracking-tighter text-[#F0EFEA]/60">
+                          <span className="text-xs font-bold uppercase truncate">
                             {article.publisher}
                           </span>
                           {article.publishedAt && (
-                            <span className="text-xs text-zinc-500 flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
+                            <span className="text-xs">
                               {article.publishedAt}
                             </span>
                           )}
                         </div>
-                        <h3 className="text-lg font-medium text-zinc-100 group-hover:text-blue-400 transition-colors mb-2 leading-snug">
-                          {article.title}
-                        </h3>
-                        <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed">
-                          {article.snippet}
-                        </p>
-                      </div>
-                      <div className="shrink-0 sm:mt-1">
-                        <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-blue-500/10 group-hover:text-blue-400 text-zinc-500 transition-colors">
-                          <ChevronRight className="w-4 h-4" />
+                        <div className="flex-1">
+                          <h3 className="text-xl md:text-2xl font-bold text-[#F0EFEA] group-hover:text-[#E63946] transition-colors leading-snug mb-3 tracking-tight">
+                            {article.title}
+                          </h3>
+                          <p className="text-base text-[#F0EFEA]/70 line-clamp-3 leading-relaxed font-serif">
+                            {article.snippet}
+                          </p>
                         </div>
-                      </div>
                     </div>
                   </motion.a>
                 ))}
